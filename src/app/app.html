@@ -1,0 +1,123 @@
+﻿<div class="app-shell">
+  <header class="topbar">
+    <div class="title-block">
+      <span class="badge">Sara learns Hindi</span>
+      <h1>Hindi Learning Corner</h1>
+    </div>
+
+    <div class="tab-toggle" role="tablist" aria-label="Learning sections">
+      <button type="button" class="tab-button" [class.active]="activeTab() === 'varnmala'" (click)="setTab('varnmala')">
+        Varnmala
+      </button>
+      <button type="button" class="tab-button" [class.active]="activeTab() === 'barakhadi'" (click)="setTab('barakhadi')">
+        Barakhadi
+      </button>
+    </div>
+  </header>
+
+  @if (activeTab() === 'varnmala') {
+    <main class="learning-panel">
+      <section class="section-header">
+        <div>
+          <h2>Alphabet Friends</h2>
+          <p>Tap a letter and listen to its sound.</p>
+        </div>
+      </section>
+
+      <div class="group-block">
+        <h3>Swar</h3>
+        <div class="letter-grid">
+          @for (letter of vowelLetters; track letter.symbol) {
+            <button type="button" class="letter-card" [class.active]="pulseKey() === letter.symbol" (click)="openLetter(letter)" [attr.aria-label]="'Listen to ' + letter.symbol + ' ' + letter.transliteration">
+              <span class="symbol">{{ letter.symbol }}</span>
+              <span class="translit">{{ letter.transliteration }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="group-block">
+        <h3>Vyanjan</h3>
+        <div class="letter-grid">
+          @for (letter of consonantLetters; track letter.symbol) {
+            <button type="button" class="letter-card" [class.active]="pulseKey() === letter.symbol" (click)="openLetter(letter)" [attr.aria-label]="'Listen to ' + letter.symbol + ' ' + letter.transliteration">
+              <span class="symbol">{{ letter.symbol }}</span>
+              <span class="translit">{{ letter.transliteration }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </main>
+  }
+
+  @if (activeTab() === 'barakhadi') {
+    <main class="learning-panel">
+      <section class="section-header">
+        <div>
+          <h2>Barakhadi Explorer</h2>
+          <p>Select a base letter and hear each sound pattern.</p>
+        </div>
+      </section>
+
+      <div class="consonant-picker" role="tablist" aria-label="Choose a base consonant">
+        @for (consonant of barakhadiOptions; track consonant) {
+          <button type="button" class="consonant-pill" [class.active]="selectedConsonant() === consonant" (click)="chooseConsonant(consonant)">
+            {{ consonant }}
+          </button>
+        }
+      </div>
+    </main>
+  }
+</div>
+
+@if (barakhadiModalOpen()) {
+  <div class="barakhadi-modal-backdrop" (click)="closeBarakhadiModal()">
+    <div class="barakhadi-modal-card" (click)="$event.stopPropagation()">
+      <div class="barakhadi-modal-header">
+        <div>
+          <h2>{{ selectedConsonant() }} - Barakhadi</h2>
+        </div>
+        <button type="button" class="close-button" (click)="closeBarakhadiModal()" aria-label="Close barakhadi">
+          ✕
+        </button>
+      </div>
+
+      <div class="barakhadi-grid">
+        @for (sound of selectedBarakhadi(); track sound) {
+          <button type="button" class="barakhadi-card" [class.active]="pulseKey() === sound" (click)="playBarakhadi(sound)" [attr.aria-label]="'Hear the sound ' + sound">
+            <span>{{ sound }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (selectedLetter()) {
+  <div class="modal-backdrop" (click)="closeLetter()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <button type="button" class="close-button" (click)="closeLetter()" aria-label="Close letter detail">
+        ✕
+      </button>
+
+      <div class="modal-letter" [class.active]="pulseKey() === selectedLetter()?.symbol">
+        {{ selectedLetter()?.symbol }}
+      </div>
+
+      <div class="modal-sound-row">
+        <span>{{ selectedLetter()?.transliteration }}</span>
+        <button type="button" class="sound-button" (click)="speak(selectedLetter()!.symbol)">
+          🔊 Hear it
+        </button>
+      </div>
+
+      <div class="example-card">
+        <div class="example-icon">{{ selectedLetter()?.icon }}</div>
+        <div class="example-text">
+          <strong>{{ selectedLetter()?.exampleWord }}</strong>
+          <small>{{ selectedLetter()?.meaning }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+}
