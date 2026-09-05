@@ -1,73 +1,84 @@
-﻿<div class="app-shell">
+﻿<div class="app-shell" [class.vibrant-theme]="vibrantColors()">
   <header class="topbar">
     <div class="title-block">
       <span class="badge">Sara learns Hindi</span>
       <h1>Hindi Learning Corner</h1>
     </div>
 
-    <div class="tab-toggle" role="tablist" aria-label="Learning sections">
-      <button type="button" class="tab-button" [class.active]="activeTab() === 'varnmala'" (click)="setTab('varnmala')">
-        Varnmala
-      </button>
-      <button type="button" class="tab-button" [class.active]="activeTab() === 'barakhadi'" (click)="setTab('barakhadi')">
-        Barakhadi
-      </button>
-    </div>
+    <details class="settings-panel">
+      <summary><span aria-hidden="true">⚙</span> Settings</summary>
+      <div class="settings-menu">
+        <div class="settings-option">
+          <span>Sound</span>
+          <label class="toggle-control">
+            <input type="checkbox" [checked]="soundEnabled()" (change)="toggleSound($any($event.target).checked)" aria-label="Enable sound">
+            <span class="toggle-track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="settings-option">
+          <span>Transliteration</span>
+          <label class="toggle-control">
+            <input type="checkbox" [checked]="transliterationVisible()" (change)="toggleTransliteration($any($event.target).checked)" aria-label="Show transliteration">
+            <span class="toggle-track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="settings-option">
+          <span>Vibrant colors</span>
+          <label class="toggle-control">
+            <input type="checkbox" [checked]="vibrantColors()" (change)="toggleVibrantColors($any($event.target).checked)" aria-label="Use vibrant colors">
+            <span class="toggle-track" aria-hidden="true"></span>
+          </label>
+        </div>
+      </div>
+    </details>
   </header>
 
-  @if (activeTab() === 'varnmala') {
-    <main class="learning-panel">
-      <section class="section-header">
-        <div>
-          <h2>Alphabet Friends</h2>
-          <p>Tap a letter and listen to its sound.</p>
-        </div>
-      </section>
-
-      <div class="group-block">
-        <h3>Swar</h3>
-        <div class="letter-grid">
-          @for (letter of vowelLetters; track letter.symbol) {
-            <button type="button" class="letter-card" [class.active]="pulseKey() === letter.symbol" (click)="openLetter(letter)" [attr.aria-label]="'Listen to ' + letter.symbol + ' ' + letter.transliteration">
-              <span class="symbol">{{ letter.symbol }}</span>
-              <span class="translit">{{ letter.transliteration }}</span>
-            </button>
-          }
-        </div>
+  <main class="learning-panel">
+    <section class="section-header">
+      <div>
+        <h2>Alphabet Friends</h2>
+        <p>Choose a letter to explore it. Enable sound whenever you are ready.</p>
       </div>
+    </section>
 
-      <div class="group-block">
-        <h3>Vyanjan</h3>
-        <div class="letter-grid">
-          @for (letter of consonantLetters; track letter.symbol) {
-            <button type="button" class="letter-card" [class.active]="pulseKey() === letter.symbol" (click)="openLetter(letter)" [attr.aria-label]="'Listen to ' + letter.symbol + ' ' + letter.transliteration">
-              <span class="symbol">{{ letter.symbol }}</span>
+    <div class="group-block">
+      <h3>Swar</h3>
+      <div class="letter-grid">
+        @for (letter of vowelLetters; track letter.symbol) {
+          <article class="letter-card" [class.active]="pulseKey() === letter.symbol" role="button" tabindex="0" (click)="openLetterCard(letter)" (keydown.enter)="openLetterCard(letter)" (keydown.space)="$event.preventDefault(); openLetterCard(letter)">
+            <span class="symbol">{{ letter.symbol }}</span>
+            @if (transliterationVisible()) {
               <span class="translit">{{ letter.transliteration }}</span>
-            </button>
-          }
-        </div>
-      </div>
-    </main>
-  }
-
-  @if (activeTab() === 'barakhadi') {
-    <main class="learning-panel">
-      <section class="section-header">
-        <div>
-          <h2>Barakhadi Explorer</h2>
-          <p>Select a base letter and hear each sound pattern.</p>
-        </div>
-      </section>
-
-      <div class="consonant-picker" role="tablist" aria-label="Choose a base consonant">
-        @for (consonant of barakhadiOptions; track consonant) {
-          <button type="button" class="consonant-pill" [class.active]="selectedConsonant() === consonant" (click)="chooseConsonant(consonant)">
-            {{ consonant }}
-          </button>
+            }
+            @if (soundEnabled()) {
+              <button type="button" class="speaker-button" (click)="playLetter($event, letter.symbol)" [attr.aria-label]="'Hear ' + letter.symbol">
+                🔊
+              </button>
+            }
+          </article>
         }
       </div>
-    </main>
-  }
+    </div>
+
+    <div class="group-block">
+      <h3>Vyanjan</h3>
+      <div class="letter-grid">
+        @for (letter of consonantLetters; track letter.symbol) {
+          <article class="letter-card" [class.active]="pulseKey() === letter.symbol" role="button" tabindex="0" (click)="openLetterCard(letter)" (keydown.enter)="openLetterCard(letter)" (keydown.space)="$event.preventDefault(); openLetterCard(letter)">
+            <span class="symbol">{{ letter.symbol }}</span>
+            @if (transliterationVisible()) {
+              <span class="translit">{{ letter.transliteration }}</span>
+            }
+            @if (soundEnabled()) {
+              <button type="button" class="speaker-button" (click)="playLetter($event, letter.symbol)" [attr.aria-label]="'Hear ' + letter.symbol">
+                🔊
+              </button>
+            }
+          </article>
+        }
+      </div>
+    </div>
+  </main>
 </div>
 
 @if (barakhadiModalOpen()) {
@@ -84,9 +95,14 @@
 
       <div class="barakhadi-grid">
         @for (sound of selectedBarakhadi(); track sound) {
-          <button type="button" class="barakhadi-card" [class.active]="pulseKey() === sound" (click)="playBarakhadi(sound)" [attr.aria-label]="'Hear the sound ' + sound">
+          <article class="barakhadi-card" [class.active]="pulseKey() === sound">
             <span>{{ sound }}</span>
-          </button>
+            @if (soundEnabled()) {
+              <button type="button" class="speaker-button" (click)="playBarakhadiFromCard($event, sound)" [attr.aria-label]="'Hear ' + sound">
+                🔊
+              </button>
+            }
+          </article>
         }
       </div>
     </div>
@@ -106,9 +122,11 @@
 
       <div class="modal-sound-row">
         <span>{{ selectedLetter()?.transliteration }}</span>
-        <button type="button" class="sound-button" (click)="speak(selectedLetter()!.symbol)">
-          🔊 Hear it
-        </button>
+        @if (soundEnabled()) {
+          <button type="button" class="sound-button" (click)="speak(selectedLetter()!.symbol)">
+            🔊 Hear it
+          </button>
+        }
       </div>
 
       <div class="example-card">

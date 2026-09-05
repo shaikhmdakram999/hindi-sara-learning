@@ -35,6 +35,49 @@ button {
   gap: 8px;
 }
 
+.settings-panel {
+  position: relative;
+}
+
+.settings-panel summary {
+  padding: 10px 14px;
+  border: 1px solid rgba(91, 66, 78, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #5f4b6f;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.settings-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 2;
+  min-width: 190px;
+  padding: 8px;
+  border: 1px solid rgba(122, 93, 160, 0.14);
+  border-radius: 16px;
+  background: #fffaf4;
+  box-shadow: 0 12px 28px rgba(80, 52, 77, 0.14);
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 6px;
+  color: #4e3958;
+  font-weight: 700;
+}
+
 .badge {
   display: inline-block;
   width: fit-content;
@@ -70,15 +113,6 @@ h3 {
   color: #59495f;
 }
 
-.tab-toggle {
-  display: flex;
-  gap: 12px;
-  padding: 8px;
-  background: #f3ecff;
-  border-radius: 18px;
-}
-
-.tab-button,
 .letter-card,
 .consonant-pill,
 .barakhadi-card,
@@ -89,20 +123,55 @@ h3 {
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
-.tab-button {
-  min-width: 140px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  background: transparent;
-  color: #5f4b6f;
+.toggle-control {
+  position: relative;
+  display: inline-flex;
+  width: 44px;
+  height: 26px;
+  flex: 0 0 auto;
+  cursor: pointer;
 }
 
-.tab-button.active {
-  background: linear-gradient(135deg, #f6c2b7 0%, #f8d7a6 100%);
-  box-shadow: 0 8px 18px rgba(192, 151, 116, 0.2);
-  color: #3f2a35;
+.toggle-control input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.toggle-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: #d8ceda;
+  box-shadow: inset 0 0 0 1px rgba(62, 43, 54, 0.12);
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.toggle-track::after {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #fffaf4;
+  box-shadow: 0 2px 5px rgba(62, 43, 54, 0.2);
+  content: '';
+  transition: transform 0.18s ease;
+}
+
+.toggle-control input:checked + .toggle-track {
+  background: #d6ad70;
+  box-shadow: inset 0 0 0 1px rgba(103, 73, 42, 0.18);
+}
+
+.toggle-control input:checked + .toggle-track::after {
+  transform: translateX(18px);
+}
+
+.toggle-control input:focus-visible + .toggle-track {
+  outline: 3px solid rgba(120, 95, 168, 0.3);
+  outline-offset: 3px;
 }
 
 .learning-panel {
@@ -111,6 +180,42 @@ h3 {
   border-radius: 30px;
   padding: 28px 24px 32px;
   box-shadow: 0 16px 40px rgba(121, 96, 151, 0.08);
+}
+
+:host:has(.vibrant-theme) {
+  background: linear-gradient(180deg, #fff3c4 0%, #d8f7f0 52%, #ffe0d7 100%);
+}
+
+.vibrant-theme .topbar,
+.vibrant-theme .learning-panel {
+  border-color: rgba(30, 137, 132, 0.18);
+  box-shadow: 0 16px 40px rgba(32, 126, 126, 0.12);
+}
+
+.vibrant-theme .topbar {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.vibrant-theme .learning-panel {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.vibrant-theme .letter-card:nth-child(3n + 1),
+.vibrant-theme .barakhadi-card:nth-child(3n + 1) {
+  background: linear-gradient(180deg, #fff08a 0%, #ffd45c 100%);
+  box-shadow: 0 8px 18px rgba(228, 164, 34, 0.22);
+}
+
+.vibrant-theme .letter-card:nth-child(3n + 2),
+.vibrant-theme .barakhadi-card:nth-child(3n + 2) {
+  background: linear-gradient(180deg, #8eeadd 0%, #49cdbb 100%);
+  box-shadow: 0 8px 18px rgba(30, 154, 139, 0.2);
+}
+
+.vibrant-theme .letter-card:nth-child(3n + 3),
+.vibrant-theme .barakhadi-card:nth-child(3n + 3) {
+  background: linear-gradient(180deg, #ffb6a8 0%, #ff8f91 100%);
+  box-shadow: 0 8px 18px rgba(220, 87, 95, 0.2);
 }
 
 .section-header {
@@ -137,6 +242,7 @@ h3 {
 }
 
 .letter-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -146,6 +252,19 @@ h3 {
   border-radius: 22px;
   background: linear-gradient(180deg, #fff7d6 0%, #fff1b8 100%);
   box-shadow: 0 8px 18px rgba(198, 172, 89, 0.14);
+}
+
+.speaker-button {
+  width: 28px;
+  height: 28px;
+  margin-top: 10px;
+  padding: 0;
+  border: 1px solid rgba(62, 43, 54, 0.14);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  cursor: pointer;
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 .letter-card:nth-child(3n + 2) {
@@ -234,6 +353,7 @@ h3 {
 }
 
 .barakhadi-card {
+  position: relative;
   min-height: 100px;
   padding: 12px 8px;
   border-radius: 16px;
@@ -248,6 +368,13 @@ h3 {
   border: none;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.barakhadi-card .speaker-button {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  margin: 0;
 }
 
 .barakhadi-modal-card .barakhadi-card {

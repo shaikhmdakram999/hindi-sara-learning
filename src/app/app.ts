@@ -1,7 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
 
-type TabKey = 'varnmala' | 'barakhadi';
-
 interface Letter {
   symbol: string;
   transliteration: string;
@@ -109,7 +107,9 @@ const barakhadiMap: Record<string, string[]> = {
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly activeTab = signal<TabKey>('varnmala');
+  protected readonly soundEnabled = signal<boolean>(false);
+  protected readonly transliterationVisible = signal<boolean>(true);
+  protected readonly vibrantColors = signal<boolean>(true);
   protected readonly selectedLetter = signal<Letter | null>(null);
   protected readonly selectedConsonant = signal<string>('क');
   protected readonly barakhadiModalOpen = signal<boolean>(false);
@@ -121,14 +121,40 @@ export class App {
 
   protected readonly selectedBarakhadi = computed(() => barakhadiMap[this.selectedConsonant()] ?? []);
 
-  protected setTab(tab: TabKey): void {
-    this.activeTab.set(tab);
+  protected toggleSound(enabled: boolean): void {
+    this.soundEnabled.set(enabled);
+
+    if (!enabled && typeof window !== 'undefined') {
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  protected toggleTransliteration(visible: boolean): void {
+    this.transliterationVisible.set(visible);
+  }
+
+  protected toggleVibrantColors(enabled: boolean): void {
+    this.vibrantColors.set(enabled);
   }
 
   protected openLetter(letter: Letter): void {
     this.selectedLetter.set(letter);
     this.animate(letter.symbol);
-    this.speak(letter.symbol);
+  }
+
+  protected openLetterCard(letter: Letter): void {
+    if (barakhadiMap[letter.symbol]) {
+      this.chooseConsonant(letter.symbol);
+      return;
+    }
+
+    this.openLetter(letter);
+  }
+
+  protected playLetter(event: Event, symbol: string): void {
+    event.stopPropagation();
+    this.animate(symbol);
+    this.speak(symbol);
   }
 
   protected closeLetter(): void {
@@ -139,7 +165,6 @@ export class App {
     this.selectedConsonant.set(consonant);
     this.barakhadiModalOpen.set(true);
     this.animate(consonant);
-    this.speak(consonant);
   }
 
   protected closeBarakhadiModal(): void {
@@ -151,8 +176,13 @@ export class App {
     this.speak(value);
   }
 
+  protected playBarakhadiFromCard(event: Event, value: string): void {
+    event.stopPropagation();
+    this.playBarakhadi(value);
+  }
+
   protected speak(text: string): void {
-    if (typeof window === 'undefined') {
+    if (!this.soundEnabled() || typeof window === 'undefined') {
       return;
     }
 
