@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/styles.css"],
+  "sourcesContent": ["* {\n  box-sizing: border-box;\n}\n\nhtml {\n  scroll-behavior: smooth;\n}\n\nbody {\n  margin: 0;\n  min-height: 100vh;\n  background: linear-gradient(180deg, #fffaf2 0%, #f3eeff 100%);\n  color: #2d1b2e;\n}\n\nimg,\nsvg {\n  display: block;\n  max-width: 100%;\n}\n\nbutton,\ninput,\nselect,\ntextarea {\n  font: inherit;\n}\n"],
+  "mappings": ";AAAA;AACE,cAAY;AACd;AAEA;AACE,mBAAiB;AACnB;AAEA;AACE,UAAQ;AACR,cAAY;AACZ;AAAA,IAAY;AAAA,MAAgB,MAAhB;AAAA,MAAwB,QAAQ,EAAhC;AAAA,MAAoC,QAAQ;AACxD,SAAO;AACT;AAEA;AACA;AACE,WAAS;AACT,aAAW;AACb;AAEA;AACA;AACA;AACA;AACE,QAAM;AACR;",
+  "names": []
+}
